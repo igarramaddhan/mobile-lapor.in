@@ -1,0 +1,11 @@
+<resources>
+    <string name="BASE_URL">http://178.128.125.242:4043/api</string>
+    <string name="app_name">Laporin</string>
+    <string name="app_detail">Pelaporan Jalan Rusak</string>
+    <string name="login_detail1">Laporkan jalanan rusak di sekitarmu.</string>
+    <string name="login_detail2">Mulai dengan masuk di sini.</string>
+    <string name="register_link"><u>Daftar di sini.</u>.</string>
+    <string name="login_link"><u>Daftar di sini.</u>.</string>
+    <string name="forget_password"><u>Lupa password?</u></string>
+    <string name="register_detail1">Isikan data diri Anda pada form di bawah ini untuk daftar.</string>
+</resources>
