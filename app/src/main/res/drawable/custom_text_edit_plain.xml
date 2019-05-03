@@ -3,18 +3,13 @@
 
     <item android:state_enabled="true" android:state_focused="true">
         <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-            <item android:bottom="0dp" android:right="10dp" android:top="0dp">
-                <shape>
-                    <solid android:color="@color/colorAccent" />
-                    <corners android:bottomLeftRadius="5dp" android:topLeftRadius="5dp" />
-                </shape>
-            </item>
-            <item android:left="4dp">
-                <shape android:shape="rectangle">
+            <item>
+                <shape xmlns:android="http://schemas.android.com/apk/res/android" android:padding="20dp" android:shape="rectangle">
                     <solid android:color="#F2F2F2" />
-                    <corners android:radius="5dp" />
+                    <corners android:bottomLeftRadius="5dp" android:bottomRightRadius="5dp" android:topLeftRadius="5dp" android:topRightRadius="5dp" />
                 </shape>
             </item>
+            <!--<item android:gravity="center_vertical" android:height="15dp" android:width="13.5dp" android:drawable="@drawable/ic_user"></item>-->
         </layer-list>
     </item>
     <item android:state_enabled="true">

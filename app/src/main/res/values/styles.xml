@@ -1,14 +1,23 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimary">@android:color/black</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:windowTranslucentStatus">@color/colorPrimaryDark</item>
+        <!--<item name="android:windowLightStatusBar" tools:targetApi="m">true</item>-->
         <item name="android:windowContentTransitions">true</item>
+    </style>
+
+    <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Toolbar.ActionTextColor" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:actionMenuTextColor">@color/colorAccent</item>
     </style>
 
 </resources>
