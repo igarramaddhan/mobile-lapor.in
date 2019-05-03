@@ -1,0 +1,8 @@
+package tk.ynrk.laporin.helper;
+
+public class Code {
+    public static final int WRITE = 101;
+    public static final int CAMERA = 102;
+    public static final int FILE = 103;
+    public static final int ALL = 100;
+}

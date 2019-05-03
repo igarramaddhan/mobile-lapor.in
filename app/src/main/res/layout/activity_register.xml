@@ -20,10 +20,11 @@
         android:paddingHorizontal="16dp">
 
         <TextView
+            android:id="@+id/app_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="72dp"
-            android:text="@string/app_name"
+            android:text="@string/app_name_up"
             android:textColor="@color/colorAccent"
             android:textSize="32sp"
             android:textStyle="bold"
@@ -51,48 +52,62 @@
             android:id="@+id/register_email_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="48dp"
             android:background="@drawable/custom_text_edit"
+            android:drawableLeft="@drawable/ic_at"
             android:hint="Email"
             android:inputType="textEmailAddress"
             android:padding="16dp"
+            android:textSize="14sp"
             android:transitionName="email_et" />
 
         <EditText
+            android:id="@+id/fullname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
             android:background="@drawable/custom_text_edit"
+            android:drawableLeft="@drawable/ic_user"
             android:hint="Nama"
             android:inputType="textEmailAddress"
+            android:textSize="14sp"
             android:padding="16dp" />
 
         <EditText
             android:id="@+id/register_password_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
             android:background="@drawable/custom_text_edit"
+            android:drawableLeft="@drawable/ic_lock"
             android:hint="Password"
             android:inputType="textPassword"
+            android:textSize="14sp"
             android:padding="16dp"
             android:transitionName="password_et" />
 
         <EditText
+            android:id="@+id/register_password_retype_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
             android:background="@drawable/custom_text_edit"
+            android:drawableLeft="@drawable/ic_lock"
             android:hint="Confirm Password"
             android:inputType="textPassword"
-            android:padding="16dp" />
+            android:textSize="14sp"
+            android:padding="16dp"
+            android:nextFocusDown="@id/register_button"
+            android:nextFocusForward="@id/register_button"/>
 
         <LinearLayout
+            android:id="@+id/redirect_to_login"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="16dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:transitionName="redirect">
 
 
             <TextView
@@ -104,6 +119,7 @@
                 android:textSize="13sp" />
 
             <TextView
+                android:id="@+id/login_navigate_link"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
@@ -114,32 +130,18 @@
 
         </LinearLayout>
 
+        <android.support.design.button.MaterialButton
+            style="@style/Widget.MaterialComponents.Button.Icon"
+            android:id="@+id/register_button"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:layout_height="58dp"
+            android:layout_marginTop="32dp"
+            android:transitionName="auth_button"
+            android:text="Daftar"
+            app:icon="@drawable/ic_arrow_upward_white_24dp"
+            app:iconPadding="20dp"/>
+
     </LinearLayout>
-
-
-    <RelativeLayout
-        android:id="@+id/register_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorAccent"
-        android:padding="16dp"
-        android:transitionName="auth_button">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:text="DAFTAR"
-            android:textColor="@android:color/white" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:src="@drawable/ic_arrow_forward_white_24dp" />
-
-    </RelativeLayout>
-
 
 </LinearLayout>

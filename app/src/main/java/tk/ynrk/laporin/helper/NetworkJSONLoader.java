@@ -1,19 +1,26 @@
 package tk.ynrk.laporin.helper;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import tk.ynrk.laporin.R;
+import tk.ynrk.laporin.object.Laporan;
 
 public class NetworkJSONLoader {
     Context context;
@@ -24,11 +31,12 @@ public class NetworkJSONLoader {
         this.listener = listener;
     }
 
-    public void get(String url) {
+    public void get(String url, final String token) {
         // Tag used to cancel the request
-        String tag_json_obj = "JSON_GET";
+        final String tag_json_obj = "JSON_GET";
 
         listener.onTaskLoading();
+        Log.d(tag_json_obj, "Token " + token +" used");
 
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET, url,
                 new Response.Listener<JSONObject>() {
@@ -44,7 +52,19 @@ public class NetworkJSONLoader {
                         listener.onTaskError(error);
                     }
                 }
-        );
+        )
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Log.d(tag_json_obj, "Get Headers Called");
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Content-Type", "application/json; charset=UTF-8");
+                params.put("Authorization", "Bearer " + token);
+                return params;
+            }
+        };
+
+        jsonObjReq.setRetryPolicy(new DefaultRetryPolicy(3000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         // Adding request to request queue
         VolleySingleton.getInstance().addToRequestQueue(jsonObjReq, tag_json_obj);
@@ -85,6 +105,8 @@ public class NetworkJSONLoader {
                 }
         );
 
+        jsonObjReq.setRetryPolicy(new DefaultRetryPolicy(3000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
         // Adding request to request queue
         VolleySingleton.getInstance().addToRequestQueue(jsonObjReq, tag_json_obj);
     }
@@ -96,6 +118,7 @@ public class NetworkJSONLoader {
 
         void onTaskError(VolleyError error);
     }
+
 
     public interface NetworkJSONPOSTRequest {
         void onTaskLoading();
