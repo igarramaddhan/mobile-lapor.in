@@ -112,10 +112,8 @@ public class RegisterActivity extends AppCompatActivity implements NetworkJSONLo
                 || repassword.getText().toString().isEmpty()
                 || fullname.getText().toString().isEmpty()){
             Toast.makeText(this, "Form pendaftaran tidak boleh kosong", Toast.LENGTH_LONG).show();
-            //warning.setVisibility(View.VISIBLE);
             return false;
         } else {
-            warning.setVisibility(View.GONE);
             return true;
         }
     }

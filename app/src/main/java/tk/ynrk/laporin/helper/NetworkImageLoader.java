@@ -54,7 +54,6 @@ public class NetworkImageLoader {
         VolleySingleton.getInstance().addToRequestQueue(imageObjReq, tag_image_obj);
     }
 
-
     public interface NetworkImageLoaderContract {
         void onTaskLoading();
 
