@@ -30,9 +30,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+import com.android.volley.VolleyError;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,39 +45,53 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import tk.ynrk.laporin.BuildConfig;
 import tk.ynrk.laporin.R;
 import tk.ynrk.laporin.controller.CameraController;
+import tk.ynrk.laporin.helper.AppPreferences;
 import tk.ynrk.laporin.helper.Code;
+import tk.ynrk.laporin.helper.NetworkJSONLoader;
 import tk.ynrk.laporin.helper.PermissionHelper;
-import tk.ynrk.laporin.object.CustomBottomSheetDialog;
+import tk.ynrk.laporin.object.CustomBottomSheet;
 
-public class UploadActivity extends AppCompatActivity implements View.OnClickListener {
+public class UploadActivity extends AppCompatActivity implements View.OnClickListener, CustomBottomSheet.BottomSheetContract, NetworkJSONLoader.NetworkJSONLoaderContract {
 
+    private final String TAG = "UPLOAD_ACTIVITY";
     private CoordinatorLayout coordinatorLayout;
+    private View bottomSheet;
+    private BottomSheetBehavior behavior;
     private Toolbar toolbar;
     private Snackbar snackbar;
-    private ImageView imageView;
+    private ImageView ivBukti;
     private CardView imageContainer;
     private Button button;
-    private LinearLayout gallery, camera;
+    private EditText etDeskripsi;
+    private EditText etMap;
 
     private Bitmap bitmap;
 
     private PermissionHelper permissionHelper;
     private CameraController cameraController;
-    private CustomBottomSheetDialog customBottomSheetDialog;
+    private CustomBottomSheet customBottomSheet;
+
+    private NetworkJSONLoader client;
+
+    private AppPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload);
 
-        imageView = findViewById(R.id.upload_image);
+        ivBukti = findViewById(R.id.upload_image);
+        etDeskripsi = findViewById(R.id.upload_description);
         coordinatorLayout = findViewById(R.id.upload_coor_layout);
         imageContainer = findViewById(R.id.upload_image_container);
-
+        button = findViewById(R.id.upload_camera);
+        button.setOnClickListener(this);
 
         toolbar = findViewById(R.id.upload_toolbar);
         setSupportActionBar(toolbar);
@@ -83,26 +102,23 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
             }
         });
 
-        customBottomSheetDialog = new CustomBottomSheetDialog();
-
-        button = findViewById(R.id.upload_camera);
-        button.setOnClickListener(this);
+        customBottomSheet = new CustomBottomSheet();
 
         cameraController = new CameraController(getApplicationContext());
         permissionHelper = new PermissionHelper(this,getApplicationContext());
         permissionHelper.checkPermissionAll();
 
-        camera = findViewById(R.id.pick_camera);
-        camera.setOnClickListener(this);
+        prefs = new AppPreferences(getApplicationContext());
+        client = new NetworkJSONLoader(getApplicationContext(), this);
 
-        gallery = findViewById(R.id.pick_photo);
-        gallery.setOnClickListener(this);
-
+        etMap = findViewById(R.id.upload_location);
+        etMap.setOnClickListener(this);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         InputStream stream = null;
+        Log.d(TAG, "code: "+requestCode);
         if (resultCode == Activity.RESULT_OK){
             switch (requestCode) {
                 case Code.FILE:
@@ -111,30 +127,30 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
                             bitmap.recycle();
                         }
 
-                        Log.d("SET PICTURE", "success");
+                        Log.d(TAG, "success");
                         stream = getContentResolver().openInputStream(data.getData());
                         bitmap = BitmapFactory.decodeStream(stream);
 
-                        imageView.setImageBitmap(bitmap);
-                        imageView.setVisibility(View.VISIBLE);
+                        ivBukti.setImageBitmap(bitmap);
+                        ivBukti.setVisibility(View.VISIBLE);
                     } catch (FileNotFoundException e) {
-                        Log.d("SET PICTURE", "failed");
+                        Log.d(TAG, "failed");
                         e.printStackTrace();
-                    } finally {
-                        if (stream != null){
-                            try {
-                                stream.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
                     }
                     break;
 
                 case Code.CAMERA:
-                    imageView.setImageURI(Uri.parse(cameraController.getCurrentPhotoPath()));
-                    imageView.setVisibility(View.VISIBLE);
-                    imageView.animate().alpha(1).setStartDelay(100);
+                    try {
+                        Log.d(TAG, "Path: " + cameraController.getCurrentPhotoPath());
+                        Uri filePath = Uri.parse(cameraController.getCurrentPhotoPath());
+                        bitmap = BitmapFactory.decodeFile(cameraController.getCurrentPhotoPath());
+                        ivBukti.setImageBitmap(bitmap);
+                        ivBukti.setVisibility(View.VISIBLE);
+                        ivBukti.animate().alpha(1).setStartDelay(100);
+                    }catch (Exception e) {
+                        Log.d(TAG, e.getMessage());
+                        e.printStackTrace();
+                    }
                     break;
             }
         }
@@ -199,26 +215,67 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.pick_camera:
-                Log.d("PICK CAMERA", "onClick: ");
-                if(!permissionHelper.checkPermission(Code.CAMERA) || !permissionHelper.checkPermission(Code.WRITE)){
-                    permissionHelper.checkPermissionAll();
-                } else {
-                    startActivityForResult(cameraController.getCameraIntent(), Code.CAMERA);
-                }
-                break;
             case R.id.upload_camera:
-                customBottomSheetDialog.show(getSupportFragmentManager(), "BOTTOM_SHEET");
-                break;
-            case R.id.pick_photo:
-                if(!permissionHelper.checkPermission(Code.WRITE)){
-                    permissionHelper.checkPermission(Code.WRITE);
+                if(etDeskripsi.getText().toString() != "" && bitmap != null){
+                    Snackbar.make(coordinatorLayout, "Upload", Snackbar.LENGTH_SHORT).show();
+                    String BASE_URL = getResources().getString(R.string.BASE_URL);
+
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("password", etDeskripsi.getText().toString());
+                    data.put("longitude", "112.616886");
+                    data.put("latitude", "-7.956609");
+                    data.put("image", bitmap);
+
+                    client.post(BASE_URL + "/laporan/create", data, prefs.getValue("token"));
                 }else {
-                    startActivityForResult(cameraController.getPhotoIntent(), Code.FILE);
+                    customBottomSheet.show(getSupportFragmentManager(), "BOTTOM_SHEET");
                 }
+                break;
+            case R.id.upload_location:
+                Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+                startActivityForResult(intent, 999);
                 break;
             default:
                 break;
         }
+    }
+
+    @Override
+    public void createRequest(int code) {
+        switch (code) {
+            case Code.FILE:
+                if(!permissionHelper.checkPermission(Code.WRITE)){
+                    permissionHelper.checkPermissionAll();
+                } else {
+                    Log.d(TAG, "code: "+Code.CAMERA);
+                    startActivityForResult(cameraController.getPhotoIntent(), Code.FILE);
+                }
+                break;
+
+            case Code.CAMERA:
+                if(!permissionHelper.checkPermission(Code.CAMERA) || !permissionHelper.checkPermission(Code.WRITE)){
+                    permissionHelper.checkPermissionAll();
+                } else {
+                    Log.d(TAG, "code: "+Code.CAMERA);
+                    startActivityForResult(cameraController.getCameraIntent(), Code.CAMERA);
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onTaskLoading() {
+
+    }
+
+    @Override
+    public void onTaskCompleted(JSONObject response) {
+        Snackbar.make(coordinatorLayout, "Upload Success!", Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onTaskError(VolleyError error) {
+        Snackbar.make(coordinatorLayout, "Upload Failed!", Snackbar.LENGTH_SHORT).show();
+        Log.d(TAG, "onTaskError: "+ error.getMessage());
     }
 }

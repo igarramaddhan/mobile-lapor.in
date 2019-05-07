@@ -110,6 +110,16 @@ public class PermissionHelper {
                     return true;
                 }
 
+            case Code.MAP:
+                if(ContextCompat.checkSelfPermission(context,
+                        Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED){
+                    return false;
+                }else {
+                    Log.d(TAG, "checkPermission: Granted");
+                    return true;
+                }
+
             default:
                 return false;
         }

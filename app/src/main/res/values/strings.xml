@@ -16,4 +16,6 @@
 
     <!-- res/values/strings.xml -->
     <integer name="swing_anim_time">750</integer>
+    <string name="title_activity_maps">Pilih Lokasi</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyCFPjf336ZfVlYqco7IrZKFtmkgJPRcYFY</string>
 </resources>
