@@ -34,6 +34,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 
@@ -152,6 +153,15 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
                         e.printStackTrace();
                     }
                     break;
+
+                case Code.MAP:
+                    String lat = data.getStringExtra("latitude");
+                    String longt = data.getStringExtra("longitude");
+                    String address = data.getStringExtra("address");
+                    Toast.makeText(this, "Retrieve data", Toast.LENGTH_SHORT).show();
+
+                    etMap.setText(address);
+                    break;
             }
         }
     }
@@ -233,7 +243,7 @@ public class UploadActivity extends AppCompatActivity implements View.OnClickLis
                 break;
             case R.id.upload_location:
                 Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-                startActivityForResult(intent, 999);
+                startActivityForResult(intent, Code.MAP);
                 break;
             default:
                 break;
