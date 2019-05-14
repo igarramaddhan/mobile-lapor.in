@@ -2,6 +2,9 @@
 <resources>
     <string-array name="district_array">
         <item>All</item>
+        <item>Blimbing</item>
+        <item>Kedungkandang</item>
+        <item>Klojen</item>
         <item>Lowokwaru</item>
         <item>Sukun</item>
     </string-array>
