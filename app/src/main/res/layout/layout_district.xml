@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/district_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="16dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginRight="16dp"
+    android:clickable="true"
+    card_view:cardCornerRadius="5dp"
+    card_view:cardElevation="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/district"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:justificationMode="none"
+            android:lineSpacingMultiplier="1.2"
+            android:text="Description"
+            android:textColor="@color/textHead"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+
+</android.support.v7.widget.CardView>

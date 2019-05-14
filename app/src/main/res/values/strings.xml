@@ -13,6 +13,7 @@
     <string name="tag_login">LOGIN_ACTIVITY</string>
     <string name="tag_register">REGISTER_ACTIVITY</string>
     <string name="upload_tittle">Buat Laporan</string>
+    <string name="select_district">Pilih Kecamatan</string>
 
     <!-- res/values/strings.xml -->
     <integer name="swing_anim_time">750</integer>

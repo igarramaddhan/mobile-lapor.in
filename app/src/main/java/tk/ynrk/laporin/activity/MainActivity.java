@@ -19,7 +19,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
@@ -40,15 +43,16 @@ import tk.ynrk.laporin.object.Laporan;
 import tk.ynrk.laporin.helper.NetworkJSONLoader;
 import tk.ynrk.laporin.object.LaporanAdapter;
 
-public class MainActivity extends AppCompatActivity implements NetworkJSONLoader.NetworkJSONLoaderContract{
+public class MainActivity extends AppCompatActivity implements NetworkJSONLoader.NetworkJSONLoaderContract, AdapterView.OnItemSelectedListener {
     private final String tag = "MAIN_ACTIVITY";
     Snackbar snackbar;
-
+    AppPreferences prefs;
+    NetworkJSONLoader client;
+    Gson gson;
     private String BASE_URL;
     private String token;
     private ArrayList<Laporan> laporan;
     private LaporanAdapter adapter;
-
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private CoordinatorLayout coordinatorLayout;
@@ -56,11 +60,7 @@ public class MainActivity extends AppCompatActivity implements NetworkJSONLoader
     private SwipeRefreshLayout swipeRefreshLayout;
     private LinearLayout greetContainer;
     private MaterialButton button;
-
-
-    AppPreferences prefs;
-    NetworkJSONLoader client;
-    Gson gson;
+    private Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements NetworkJSONLoader
 
         Toolbar toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         layoutManager = new LinearLayoutManager(MainActivity.this);
         adapter = new LaporanAdapter(laporan, getApplicationContext(), this);
@@ -106,9 +107,19 @@ public class MainActivity extends AppCompatActivity implements NetworkJSONLoader
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                client.get(BASE_URL+"/laporan", token);
+                String filter = spinner.getSelectedItem().toString();
+                client.get(BASE_URL + "/laporan" + (filter.equals("All") ? "" : ("/laporan?district=" + filter)), token);
             }
         });
+
+        spinner = findViewById(R.id.spinner_nav);
+        ArrayAdapter<CharSequence> sAdapter = ArrayAdapter.createFromResource(this,
+                R.array.district_array, android.R.layout.simple_spinner_item);
+
+        sAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(sAdapter);
+        spinner.setOnItemSelectedListener(this);
+
 
     }
 
@@ -133,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements NetworkJSONLoader
             return true;
         }
 
-        if(id == R.id.logout) {
+        if (id == R.id.logout) {
             return logout();
         }
 
@@ -149,7 +160,8 @@ public class MainActivity extends AppCompatActivity implements NetworkJSONLoader
     public void onTaskCompleted(JSONObject response) {
         try {
             JSONArray laporanJson = response.getJSONArray("laporan");
-            laporan = gson.fromJson(laporanJson.toString(),  new TypeToken<ArrayList<Laporan>>(){}.getType());
+            laporan = gson.fromJson(laporanJson.toString(), new TypeToken<ArrayList<Laporan>>() {
+            }.getType());
             setView();
             adapter.clear();
             adapter.addAll(laporan);
@@ -163,8 +175,8 @@ public class MainActivity extends AppCompatActivity implements NetworkJSONLoader
 
     @Override
     public void onTaskError(VolleyError error) {
-        try{
-            if(error.networkResponse == null){
+        try {
+            if (error.networkResponse == null) {
                 if (error.getClass().equals(TimeoutError.class)) {
                     swipeRefreshLayout.setRefreshing(false);
                     Snackbar sbRetry = Snackbar.make(coordinatorLayout, "Gagal memuat laporan", Snackbar.LENGTH_SHORT);
@@ -176,16 +188,16 @@ public class MainActivity extends AppCompatActivity implements NetworkJSONLoader
                     });
                     sbRetry.show();
                 }
-            }else {
+            } else {
                 checkValidSession(error.networkResponse.statusCode);
             }
-        }catch (Exception e){
-            Log.d("Task error", "status_code: "+String.valueOf(error.networkResponse));
+        } catch (Exception e) {
+            Log.d("Task error", "status_code: " + String.valueOf(error.networkResponse));
         }
     }
 
     private Boolean checkValidSession(int statusCode) {
-        if(statusCode == 500) {
+        if (statusCode == 500) {
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
             finish();
@@ -202,8 +214,8 @@ public class MainActivity extends AppCompatActivity implements NetworkJSONLoader
         return true;
     }
 
-    private void setView(){
-        if(laporan.size() == 0) {
+    private void setView() {
+        if (laporan.size() == 0) {
             recyclerView.setVisibility(View.GONE);
             greetContainer.setVisibility(View.VISIBLE);
             floatingActionButton.hide();
@@ -214,4 +226,19 @@ public class MainActivity extends AppCompatActivity implements NetworkJSONLoader
         }
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        String[] dArray = getResources().getStringArray(R.array.district_array);
+        String filter = dArray[i];
+        if (filter.equals("All")) {
+            client.get(BASE_URL + "/laporan", token);
+        } else {
+            client.get(BASE_URL + "/laporan?district=" + filter, token);
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
+    }
 }

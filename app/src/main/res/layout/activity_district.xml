@@ -22,7 +22,7 @@
             android:layout_marginEnd="16dp"
             android:theme="@style/Toolbar.ActionTextColor"
             app:titleTextAppearance="@style/Toolbar.TitleText"
-            app:title="@string/upload_tittle"
+            app:title="@string/select_district"
             app:navigationIcon="@drawable/ic_outline_arrow_back"
             app:layout_scrollFlags="scroll|enterAlways">
 
@@ -35,41 +35,20 @@
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:paddingBottom="64dp">
-
-            <include layout="@layout/component_upload_detail"></include>
-
-            <include layout="@layout/component_upload_location"></include>
-
-            <include layout="@layout/component_upload_district"></include>
-
-            <include layout="@layout/component_upload_gambar"></include>
-
-        </LinearLayout>
-
-    </android.support.v4.widget.NestedScrollView>
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="@color/colorAccent"
-        app:layout_anchorGravity="bottom|center"
-        android:layout_gravity="center|bottom"
-        android:gravity="center">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingBottom="64dp">
 
-        <android.support.design.button.MaterialButton
-            android:id="@+id/upload_camera"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/colorPrimary"
-            android:text="GAMBAR"/>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/district_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </android.support.v7.widget.RecyclerView>
+
     </LinearLayout>
-    
-    <include layout="@layout/bottom_sheet"></include>
+    </android.support.v4.widget.NestedScrollView>
+
 
 </android.support.design.widget.CoordinatorLayout>

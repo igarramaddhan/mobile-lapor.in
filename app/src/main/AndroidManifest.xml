@@ -22,16 +22,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".activity.DistrictActivity"></activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".activity.MapsActivity"
-            android:label="Pilih Lokasi">
-        </activity>
-
+        <activity
+            android:name=".activity.MapsActivity"
+            android:label="Pilih Lokasi"></activity>
         <activity android:name=".activity.UploadActivity" />
         <activity android:name=".activity.SplashActivity">
             <intent-filter>
@@ -55,7 +56,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_path"></meta-data>
+                android:resource="@xml/file_path" />
         </provider>
     </application>
 
