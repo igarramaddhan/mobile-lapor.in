@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -39,6 +41,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private TextView coordinate;
     private EditText location;
     private String latt = "" , longt = "";
+    private String address = "";
 
     private LocationController locationController;
 
@@ -65,6 +68,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mMap.getMyLocation() != null) { // Check to ensure coordinates aren't null, probably a better way of doing this...
+                    Log.d("ON MY LICATION", "TRUE");
+                    onMapClick(new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude()));
+                }
+            }
+        });
         coordinate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,6 +85,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
                 else {
                     Toast.makeText(MapsActivity.this, "Anda Sudah memasukkan koordinat", Toast.LENGTH_SHORT).show();
+                    Intent intentResult = new Intent();
+
+                    intentResult.putExtra("latitude",latt);
+                    intentResult.putExtra("longitude",longt);
+                    intentResult.putExtra("address",address);
+                    setResult(Activity.RESULT_OK, intentResult);
+                    finish();
                 }
             }
         });
@@ -164,8 +183,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         latt = point.latitude+"";
         longt = point.longitude +"";
 
-        String address = locationController.getAddress(Float.parseFloat(latt), Float.parseFloat(longt));
-        location.setText(latt +" ; "+longt);
+        address = locationController.getAddress(Float.parseFloat(latt), Float.parseFloat(longt));
+//        location.setText(latt +" ; "+longt);
+        location.setText(address);
     }
 
     @Override
